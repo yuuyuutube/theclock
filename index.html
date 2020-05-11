@@ -17,12 +17,26 @@
       background-color: #212529;
       color: white;
     }
+    .app-inner {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      top: 0;
+    }
     .button-darkmode {
       cursor: pointer;
-      position: fixed;
+      position: absolute;
       bottom: 10px;
       left: 0;
       right: 0;
+    }
+    .bar {
+      background-color: #eee;
+      position: absolute;
+      height: 6px;
+      bottom: 0;
+      line-height: 0;
     }
     .hms{
       font-size: 8vw;
@@ -32,13 +46,6 @@
       font-size: 4vw;
       color: #ccc;
       min-width: 14.5vw;
-    }
-    .bar {
-      background-color: #eee;
-      position: fixed;
-      height: 6px;
-      bottom: 0;
-      line-height: 0;
     }
     .bar-inner {
       background-color: #39f;
@@ -51,7 +58,7 @@
 </head>
 <body class="h-100">
   <div id="app" class="text-center h-100" v-bind:class="{'darkmode' : darkmode}">
-    <div class="d-flex h-100 align-items-center justify-content-center">
+    <div class="app-inner d-flex h-100 align-items-center justify-content-center">
       <div class="d-block w-100 text-center">
         <div class="row no-gutters hms">
           <div class="col-2 offset-2">{{hh}}</div>
