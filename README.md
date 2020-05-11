@@ -1,2 +1,3 @@
-# theclock
-simple clock for check second/millisecond.
+---
+permalink: /index.html
+---
