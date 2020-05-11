@@ -25,11 +25,11 @@
       right: 0;
     }
     .hms{
-      font-size: 12vw;
+      font-size: 8vw;
       line-height: 1;
     }
     small{
-      font-size: 6vw;
+      font-size: 4vw;
       color: #ccc;
       min-width: 14.5vw;
     }
@@ -52,13 +52,19 @@
 <body class="h-100">
   <div id="app" class="text-center h-100" v-bind:class="{'darkmode' : darkmode}">
     <div class="d-flex h-100 align-items-center justify-content-center">
-      <div class="text-right">
-        <div class="hms">
-          {{hhmmss}}
+      <div class="d-block w-100 text-center">
+        <div class="row no-gutters hms">
+          <div class="col-2 offset-2">{{hh}}</div>
+          <div class="col-1">:</div>
+          <div class="col-2">{{mm}}</div>
+          <div class="col-1">:</div>
+          <div class="col-2">{{ss}}</div>
+          <div class="col-2">
+            <small>
+              .{{ms}}
+            </small>          
+          </div>
         </div>
-        <small class="d-inline-block text-left">
-          .{{ms}}
-        </small>
       </div>
     </div>
     <div class="button-darkmode text-center" @click="darkmode=!darkmode">Dark mode
@@ -76,8 +82,14 @@
         darkmode: false,
       },
       computed:{
-        hhmmss() {
-          return dayjs(this.time).format('hh:mm:ss')
+        hh() {
+          return dayjs(this.time).format('hh')
+        },
+        mm() {
+          return dayjs(this.time).format('mm')
+        },
+        ss() {
+          return dayjs(this.time).format('ss')
         },
         sec() {
           return dayjs(this.time).second()
@@ -103,7 +115,7 @@
         console.log(this.time);
         window.setInterval(function() {
           app.time = new Date()
-        },1)
+        }, 17)
       },
       methods: {
       }
