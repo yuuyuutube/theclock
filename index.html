@@ -30,7 +30,7 @@
     .button-muted {
       cursor: pointer;
       position: absolute;
-      top: 0;
+      top: 6px;
       left: 0;
       right: 0;
     }
@@ -68,7 +68,7 @@
 </head>
 <body class="h-100">
   <div id="app" class="text-center h-100" v-bind:class="{'darkmode' : darkmode}">
-    <audio id="audio" src="tick1.mp3" class="d-none"></audio>
+    <audio id="audio" src="tick1.mp3" class="d-none" controls muted></audio>
     <div class="app-inner d-flex h-100 align-items-center justify-content-center">
       <div class="d-block w-100 text-center">
         <div class="row no-gutters hms">
@@ -134,6 +134,9 @@
             this.playAudio();
             console.log('1 sec');
           }
+        },
+        muted() {
+          this.audio.muted = !this.audio.muted;
         },
       },
       mounted() {
