@@ -27,6 +27,13 @@
       right: 0;
       top: 0;
     }
+    .button-muted {
+      cursor: pointer;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
     .button-darkmode {
       cursor: pointer;
       position: absolute;
@@ -61,6 +68,7 @@
 </head>
 <body class="h-100">
   <div id="app" class="text-center h-100" v-bind:class="{'darkmode' : darkmode}">
+    <audio id="audio" src="tick1.mp3" class="d-none"></audio>
     <div class="app-inner d-flex h-100 align-items-center justify-content-center">
       <div class="d-block w-100 text-center">
         <div class="row no-gutters hms">
@@ -80,6 +88,9 @@
     <div class="button-darkmode text-center" @click="darkmode=!darkmode">Dark mode
       <template v-if="darkmode"> off</template>
     </div>
+    <div class="button-muted text-center" @click="muted=!muted">Sound
+      <template v-if="!muted"> off</template>
+    </div>
     <div class="bar w-100 text-left">
       <div class="bar-inner d-inline-block h-100" v-bind:style="'width:'+ ms/10 +'%; opacity:'+ms/1000"></div>
     </div>
@@ -89,7 +100,9 @@
       el: '#app',
       data: {
         time: new Date(),
+        audio: {},
         darkmode: false,
+        muted: true,
       },
       computed:{
         hh() {
@@ -111,11 +124,14 @@
       watch: {
         sec() {
           if (this.sec === 0) {
+            this.playAudio();
             console.log('new min');
           } else
           if ( this.sec % 10 === 0 ) {
+            this.playAudio();
             console.log('10 sec');
           } else {
+            this.playAudio();
             console.log('1 sec');
           }
         },
@@ -128,7 +144,17 @@
         }, 17)
       },
       methods: {
-      }
+        playAudio() {
+          this.audio.currentTime = 0;
+          if (!this.muted) {
+            this.audio.play();
+            console.log('play');
+          }
+        },
+      },
+      created() {
+        this.audio = document.getElementById('audio');
+      },
     })
   </script>
 </body>
