@@ -41,7 +41,7 @@
       line-height: 0;
     }
     .bar-inner {
-      background-color: #9cf;
+      background-color: #39f;
     }
     .darkmode .bar {
       background-color: #333;
@@ -61,7 +61,7 @@
           <div class="col-2">{{ss}}</div>
           <div class="col-2">
             <small>
-              .{{ms}}
+              .{{Math.floor(ms/100)}}
             </small>          
           </div>
         </div>
@@ -71,7 +71,7 @@
       <template v-if="darkmode"> off</template>
     </div>
     <div class="bar w-100 text-left">
-      <div class="bar-inner d-inline-block h-100" v-bind:style="'width:'+ ms/10 +'%'"></div>
+      <div class="bar-inner d-inline-block h-100" v-bind:style="'width:'+ ms/10 +'%; opacity:'+ms/1000"></div>
     </div>
   </div>
   <script>
