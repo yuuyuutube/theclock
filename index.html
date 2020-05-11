@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clock</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.8.26/dayjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <style>
+    body {
+      /* font-family: 'Courier', 'Courier New','Arial black'; */
+      font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Consolas', 'Lucida Console', Monaco, monospace;
+      font-weight: 700;
+    }
+    .hms{
+      font-size: 12vw;
+    }
+    small{
+      font-size: 6vw;
+      color: #ccc;
+      min-width: 14vw;
+    }
+    .bar {
+      background-color: #eee;
+      position: fixed;
+      height: 8px;
+      bottom: 0;
+      line-height: 0;
+    }
+    .bar-inner {
+      background-color: #9cf;
+    }
+  </style>
+</head>
+<body class="h-100">
+  <div id="app" class="text-center h-100">
+    <div class="d-flex h-100 align-items-center justify-content-center">
+      <div class="text-right">
+        <div class="hms">
+          {{hhmmss}}
+        </div>
+        <small class="d-inline-block text-left">
+          .{{ms}}
+        </small>
+      </div>
+    </div>
+    <div class="bar w-100 text-left">
+      <div class="bar-inner d-inline-block h-100" v-bind:style="'width:'+ ms/10 +'%'"></div>
+    </div>
+  </div>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        time: new Date(),
+      },
+      computed:{
+        hhmmss() {
+          return dayjs(this.time).format('hh:mm:ss')
+        },
+        sec() {
+          return dayjs(this.time).second()
+        },
+        ms() {
+          return dayjs(this.time).millisecond()
+        },
+      },
+      watch: {
+        sec() {
+          if (this.sec === 0) {
+            console.log('new min');
+          } else
+          if ( this.sec % 10 === 0 ) {
+            console.log('10 sec');
+          } else {
+            console.log('1 sec');
+          }
+        },
+      },
+      mounted() {
+        const app = this;
+        console.log(this.time);
+        window.setInterval(function() {
+          app.time = new Date()
+        },1)
+      },
+      methods: {
+      }
+    })
+  </script>
+</body>
+</html>
