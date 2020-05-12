@@ -210,13 +210,21 @@
       },
       watch: {
         sec() {
+          const app = this;
           if (this.sec === 0) {
-            this.playAudio();
+            // this.playAudio();
             console.log('new min');
           } else
           if ( this.sec % 10 === 0 ) {
-            this.playAudio();
+            // this.playAudio();
             console.log('10 sec');
+          } else
+          if ( this.sec % 10 === 9 ) {
+            // console.log('9 sec');
+            /* 9.5 sec play audio */
+            window.setTimeout(function() {
+              this.playAudio();
+            }, 500);
           } else {
             console.log('1 sec');
           }
