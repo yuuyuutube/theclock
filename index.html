@@ -1,258 +1,74 @@
 <!DOCTYPE html>
-<html lang="en" class="h-100">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clock</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.8.26/dayjs.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.14/vue.min.js" integrity="sha512-XdUZ5nrNkVySQBnnM5vzDqHai823Spoq1W3pJoQwomQja+o4Nw0Ew1ppxo5bhF2vMug6sfibhKWcNJsG8Vj9tg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f8f9fa">
+  <meta name="description" content="A minimal, precise 24-hour clock with optional time cues.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="The Clock">
+  <meta property="og:description" content="A minimal, precise 24-hour clock with optional time cues.">
+  <meta property="og:url" content="https://yuuyuutube.github.io/theclock/">
+  <meta property="og:image" content="https://yuuyuutube.github.io/theclock/og-image.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The Clock">
+  <meta name="twitter:description" content="A minimal, precise 24-hour clock with optional time cues.">
+  <meta name="twitter:image" content="https://yuuyuutube.github.io/theclock/og-image.svg">
+  <link rel="canonical" href="https://yuuyuutube.github.io/theclock/">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>The Clock</title>
   <style>
-    body {
-      /* font-family: 'Courier', 'Courier New','Arial black'; */
-      font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Consolas', 'Lucida Console', Monaco, monospace;
-      font-weight: 700;
-    }
-    #app {
-      transition: background-color .5s ease, color .2s ease;
-    }
-    .darkmode {
-      background-color: #212529;
-      color: white;
-    }
-    .app-inner {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      top: 0;
-    }
-    .button-muted {
-      cursor: pointer;
-      position: absolute;
-      top: 6px;
-      right: 10px;
-      transition: opacity .2s ease;
-    }
-    .button-muted.is-muted {
-      opacity: 0.2;
-    }
-    .button-darkmode {
-      cursor: pointer;
-      position: absolute;
-      bottom: 10px;
-      left: 0;
-      right: 0;
-    }
-    .bar {
-      background-color: #eee;
-      position: absolute;
-      height: 4px;
-      bottom: 0;
-      line-height: 0;
-    }
-    .hms{
-      font-size: 8vw;
-      line-height: 1;
-    }
-    small{
-      font-size: 4vw;
-      color: #ccc;
-      min-width: 14.5vw;
-    }
-    .bar-inner {
-      background-color: #39f;
-    }
-    .darkmode .bar {
-      background-color: #333;
-
-    }
-    svg {
-      width: 24px;
-      height: 24px;
-    }
-    svg path{
-      fill: black;
-    }
-    .darkmode svg path{
-      fill: white;
-      transition: fill .2s ease;
-    }
-    .icon-sound {
-      height: 24px;
-    }
-    .icon-sound span {
-      display: inline-block;
-      width: 2px;
-      height: 4px;
-      margin: 0 1px;
-      background-color: black;
-      border-radius: 2px;
-    }
-    .is-play .icon-sound span {
-      animation-name: soundplay;
-      animation-duration: 1s;
-      animation-iteration-count:infinite;
-      /* animation-direction:alternate; */
-    }
-    .delay-1 {
-      animation-delay: .1s;
-    }
-    .delay-2 {
-      animation-delay: .2s;
-    }
-    .delay-3 {
-      animation-delay: .3s;
-    }
-    .delay-4 {
-      animation-delay: .4s;
-    }
-    .darkmode .icon-sound span {
-      background-color: white;
-    }
-    @keyframes soundplay {
-      0%{
-        height: 4px;
-      }
-      50%{
-        height: 12px;
-      }
-      100%{
-        height: 4px;
-      }
-    }
+    :root { color-scheme: light; --background:#f8f9fa; --foreground:#212529; --muted:#adb5bd; --track:#e9ecef; --accent:#3399ff; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body { background:var(--background); color:var(--foreground); font-family:"DejaVu Sans Mono","Droid Sans Mono",Consolas,"Lucida Console",Monaco,monospace; font-weight:700; overflow:hidden; transition:background-color .5s ease,color .2s ease; }
+    body.darkmode { color-scheme:dark; --background:#212529; --foreground:#fff; --muted:#6c757d; --track:#343a40; }
+    .app-inner { align-items:center; display:flex; height:100%; justify-content:center; position:absolute; inset:0; }
+    .clock { align-items:baseline; display:flex; justify-content:center; width:100%; }
+    .time { font-size:clamp(2.4rem,8vw,8rem); line-height:1; }
+    .millisecond { color:var(--muted); font-size:clamp(1.2rem,4vw,4rem); min-width:14.5vw; }
+    button { appearance:none; background:transparent; border:0; color:inherit; cursor:pointer; padding:8px; position:absolute; z-index:1; }
+    button:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+    .button-theme { bottom:10px; left:0; right:0; margin:auto; width:48px; }
+    .button-muted { right:10px; top:6px; transition:opacity .2s ease; }
+    .button-muted.is-muted { opacity:.25; }
+    svg { display:block; fill:currentColor; height:24px; width:24px; }
+    .icon-sound { align-items:center; display:flex; height:24px; justify-content:center; }
+    .icon-sound span { background:currentColor; border-radius:2px; display:inline-block; height:4px; margin:0 1px; width:2px; }
+    .is-play .icon-sound span { animation:soundplay 1s infinite; }
+    .delay-1 { animation-delay:.1s; } .delay-2 { animation-delay:.2s; } .delay-3 { animation-delay:.3s; } .delay-4 { animation-delay:.4s; }
+    .bar { background:var(--track); bottom:0; height:4px; left:0; position:absolute; right:0; }
+    .bar-inner { background:var(--accent); height:100%; opacity:0; transition:width .05s linear; }
+    @keyframes soundplay { 0%,100% { height:4px; } 50% { height:12px; } }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; } }
   </style>
 </head>
-<body class="h-100">
-  <div id="app" class="text-center h-100" v-bind:class="{'darkmode' : darkmode}">
-    <audio id="audio" src="beep2.mp3" class="d-none" controls muted></audio>
-    <div class="app-inner d-flex h-100 align-items-center justify-content-center">
-      <div class="d-block w-100 text-center">
-        <div class="row no-gutters hms">
-          <div class="col-2 offset-2">{{hh}}</div>
-          <div class="col-1">:</div>
-          <div class="col-2">{{mm}}</div>
-          <div class="col-1">:</div>
-          <div class="col-2">{{ss}}</div>
-          <div class="col-2">
-            <small>
-              .{{Math.floor(ms/100)}}
-            </small>          
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="button-darkmode p-2 text-center" @click="darkmode=!darkmode">
-      <template v-if="!darkmode">
-        <svg>
-          <path d="M15.9,8.1c-1-1-2.4-1.7-3.9-1.7S9.1,7.1,8.1,8.1c-1,1-1.7,2.4-1.7,3.9s0.7,2.9,1.7,3.9s2.4,1.6,3.9,1.6s2.9-0.6,3.9-1.6
-            c1-1,1.6-2.4,1.6-3.9S16.9,9.1,15.9,8.1z M14.9,14.9C14.1,15.6,13.1,16,12,16s-2.1-0.4-2.9-1.1S8,13.1,8,12s0.4-2.1,1.1-2.9
-            S10.9,8,12,8s2.1,0.4,2.9,1.1S16,10.9,16,12S15.6,14.1,14.9,14.9z"/>
-          <path d="M22.3,11.3H20c-0.4,0-0.8,0.4-0.8,0.8s0.4,0.8,0.8,0.8h2.3c0.4,0,0.8-0.4,0.8-0.8S22.6,11.3,22.3,11.3z"/>
-          <path d="M12,19.3c-0.4,0-0.8,0.4-0.8,0.8v2.3c0,0.4,0.4,0.8,0.8,0.8s0.8-0.4,0.8-0.8V20C12.8,19.6,12.4,19.3,12,19.3z"/>
-          <path d="M19.8,18.7l-1.6-1.6c-0.3-0.3-0.8-0.3-1,0s-0.3,0.8,0,1l1.6,1.6c0.3,0.3,0.8,0.3,1,0C20,19.5,20,19,19.8,18.7z"/>
-          <path d="M12,1c-0.4,0-0.8,0.4-0.8,0.8V4c0,0.4,0.4,0.8,0.8,0.8s0.8-0.3,0.8-0.8V1.8C12.8,1.4,12.4,1,12,1z"/>
-          <path d="M19.8,4.3c-0.3-0.3-0.8-0.3-1,0l-1.6,1.6c-0.3,0.3-0.3,0.8,0,1c0.3,0.3,0.8,0.3,1,0l1.6-1.6C20.1,5,20.1,4.5,19.8,4.3z"/>
-          <path d="M4,11.3H1.8C1.4,11.3,1,11.6,1,12s0.3,0.8,0.8,0.8H4c0.4,0,0.8-0.4,0.8-0.8S4.4,11.3,4,11.3z"/>
-          <path d="M6.8,17.1c-0.3-0.3-0.8-0.3-1,0l-1.6,1.6c-0.3,0.3-0.3,0.8,0,1s0.8,0.3,1,0l1.6-1.6C7.2,17.9,7.2,17.4,6.8,17.1z"/>
-          <path d="M6.8,5.8L5.3,4.3C4.9,4,4.5,4,4.2,4.3C3.9,4.5,3.9,5,4.2,5.3l1.6,1.6c0.3,0.3,0.8,0.3,1,0C7.2,6.6,7.2,6.1,6.8,5.8z"/>
-        </svg>
-      </template>
-      <template v-if="darkmode">
-        <svg>
-          <path d="M22.5,14c-0.2,0-0.4,0-0.6,0.1c-0.7,0.6-1.6,1.1-2.5,1.4c-0.8,0.3-1.8,0.5-2.8,0.5c-2.3,0-4.3-0.9-5.8-2.4
-          s-2.4-3.6-2.4-5.8c0-0.9,0.1-1.9,0.4-2.7C9,4.3,9.4,3.4,10,2.7c0.2-0.3,0.2-0.7-0.1-1C9.7,1.6,9.5,1.5,9.3,1.6
-          c-2.4,0.6-4.5,2.1-6,4C1.8,7.5,1,9.8,1,12.3c0,3.1,1.2,5.8,3.2,7.9s4.8,3.2,7.9,3.2c2.6,0,5-0.9,6.9-2.4c1.9-1.5,3.3-3.7,3.9-6.2
-          C23.1,14.5,22.9,14.1,22.5,14z M18.2,19.9c-1.6,1.3-3.7,2.1-6,2.1c-2.7,0-5.1-1.1-6.8-2.8c-1.8-1.7-2.9-4.2-2.9-6.9
-          c0-2.2,0.7-4.2,2-5.9c0.8-1.1,1.9-2,3.2-2.7C7.6,4,7.4,4.3,7.3,4.7C7,5.7,6.8,6.8,6.8,7.9c0,2.7,1.1,5.1,2.8,6.9s4.2,2.8,6.9,2.8
-          c1.2,0,2.3-0.2,3.3-0.6c0.3-0.1,0.7-0.3,1-0.4C20.3,17.9,19.3,19,18.2,19.9z"/>
-        </svg>
-      </template>
-    </div>
-    <div class="button-muted text-center p-2" @click="muted=!muted" :class="{'is-muted' : muted, 'is-play' : !muted}">
-      <div class="icon-sound d-flex align-items-center justify-content-center">
-        <span></span>
-        <span class="delay-2"></span>
-        <span class="delay-4"></span>
-        <span class="delay-1"></span>
-        <span class="delay-3"></span>
-      </div>
-    </div>
-    <div class="bar w-100 text-left">
-      <div class="bar-inner d-inline-block h-100" v-bind:style="'width:'+ ms/10 +'%; opacity:'+ms/1000"></div>
-    </div>
-  </div>
+<body>
+  <main id="app" aria-label="Clock">
+    <audio id="audio" src="beep2.mp3" preload="auto"></audio>
+    <div class="app-inner"><div class="clock" aria-live="off" aria-label="Current time">
+      <span id="hours" class="time">00</span><span class="time">:</span><span id="minutes" class="time">00</span><span class="time">:</span><span id="seconds" class="time">00</span><span id="milliseconds" class="millisecond">.0</span>
+    </div></div>
+    <button id="theme-button" class="button-theme" type="button" aria-label="Switch to dark mode"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="sun.svg#Capa_1"></use></svg></button>
+    <button id="sound-button" class="button-muted is-muted" type="button" aria-label="Turn sound on" aria-pressed="false"><span class="icon-sound" aria-hidden="true"><span></span><span class="delay-2"></span><span class="delay-4"></span><span class="delay-1"></span><span class="delay-3"></span></span></button>
+    <div class="bar" aria-hidden="true"><div id="bar-inner" class="bar-inner"></div></div>
+  </main>
   <script>
-    var app = new Vue({
-      el: '#app',
-      data: {
-        time: new Date(),
-        audio: {},
-        darkmode: false,
-        muted: true,
-      },
-      computed:{
-        hh() {
-          return dayjs(this.time).format('HH')
-        },
-        mm() {
-          return dayjs(this.time).format('mm')
-        },
-        ss() {
-          return dayjs(this.time).format('ss')
-        },
-        sec() {
-          return dayjs(this.time).second()
-        },
-        ms() {
-          return dayjs(this.time).millisecond()
-        },
-      },
-      watch: {
-        sec() {
-          const app = this;
-          if (this.sec === 0) {
-            // this.playAudio();
-            console.log('new min');
-          } else
-          if ( this.sec % 10 === 0 ) {
-            // this.playAudio();
-            console.log('10 sec');
-          } else
-          if ( this.sec % 10 === 9 ) {
-            // console.log('9 sec');
-            /* 9.5 sec play audio */
-            window.setTimeout(function() {
-              app.playAudio();
-            }, 500);
-          } else {
-            console.log('1 sec');
-          }
-        },
-        muted() {
-          this.audio.muted = !this.audio.muted;
-        },
-      },
-      mounted() {
-        const app = this;
-        console.log(this.time);
-        window.setInterval(function() {
-          app.time = new Date()
-        }, 17)
-      },
-      methods: {
-        playAudio() {
-          this.audio.currentTime = 0;
-          if (!this.muted) {
-            this.audio.play();
-            console.log('play');
-          }
-        },
-      },
-      created() {
-        this.audio = document.getElementById('audio');
-      },
-    })
+    (() => {
+      const body=document.body,audio=document.getElementById('audio'),themeButton=document.getElementById('theme-button'),soundButton=document.getElementById('sound-button'),themeIcon=themeButton.querySelector('use'),hours=document.getElementById('hours'),minutes=document.getElementById('minutes'),seconds=document.getElementById('seconds'),milliseconds=document.getElementById('milliseconds'),bar=document.getElementById('bar-inner');
+      let darkMode=localStorage.getItem('clock-darkmode')==='true',muted=localStorage.getItem('clock-muted')!=='false',lastCue='';
+      const pad=value=>String(value).padStart(2,'0');
+      const updateTheme=()=>{ body.classList.toggle('darkmode',darkMode); themeButton.setAttribute('aria-label',darkMode?'Switch to light mode':'Switch to dark mode'); themeIcon.setAttribute('href',darkMode?'moon.svg#Capa_1':'sun.svg#Capa_1'); document.querySelector('meta[name="theme-color"]').setAttribute('content',darkMode?'#212529':'#f8f9fa'); };
+      const updateSound=()=>{ audio.muted=muted; soundButton.classList.toggle('is-muted',muted); soundButton.classList.toggle('is-play',!muted); soundButton.setAttribute('aria-label',muted?'Turn sound on':'Turn sound off'); soundButton.setAttribute('aria-pressed',String(!muted)); };
+      const playCue=()=>{ if(muted)return; audio.currentTime=0; audio.play().catch(()=>{}); };
+      const render=()=>{ const now=new Date(),ms=now.getMilliseconds(),cue=`${now.getMinutes()}:${now.getSeconds()}`; hours.textContent=pad(now.getHours()); minutes.textContent=pad(now.getMinutes()); seconds.textContent=pad(now.getSeconds()); milliseconds.textContent=`.${Math.floor(ms/100)}`; bar.style.width=`${ms/10}%`; bar.style.opacity=String(ms/1000); if(now.getSeconds()%10===9&&ms>=500&&cue!==lastCue){lastCue=cue;playCue();} window.requestAnimationFrame(render); };
+      themeButton.addEventListener('click',()=>{ darkMode=!darkMode; localStorage.setItem('clock-darkmode',String(darkMode)); updateTheme(); });
+      soundButton.addEventListener('click',()=>{ muted=!muted; localStorage.setItem('clock-muted',String(muted)); updateSound(); if(!muted)playCue(); });
+      updateTheme(); updateSound(); window.requestAnimationFrame(render);
+      if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1')) navigator.serviceWorker.register('sw.js').catch(()=>{});
+    })();
   </script>
 </body>
 </html>

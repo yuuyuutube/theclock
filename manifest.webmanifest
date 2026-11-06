@@ -1,0 +1,13 @@
+{
+  "name": "The Clock",
+  "short_name": "Clock",
+  "description": "A minimal, precise 24-hour clock.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f8f9fa",
+  "theme_color": "#f8f9fa",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
