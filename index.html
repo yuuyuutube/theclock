@@ -32,40 +32,43 @@
     button { appearance:none; background:transparent; border:0; color:inherit; cursor:pointer; padding:8px; position:absolute; z-index:1; }
     button:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
     .button-theme { bottom:10px; left:0; right:0; margin:auto; width:48px; }
-    .button-muted { right:10px; top:6px; transition:opacity .2s ease; }
-    .button-muted.is-muted { opacity:.25; }
+    .button-sound { right:10px; top:6px; transition:opacity .2s ease; }
+    .button-sound.is-muted { opacity:.25; }
     svg { display:block; fill:currentColor; height:24px; width:24px; }
     .icon-sound { align-items:center; display:flex; height:24px; justify-content:center; }
     .icon-sound span { background:currentColor; border-radius:2px; display:inline-block; height:4px; margin:0 1px; width:2px; }
     .is-play .icon-sound span { animation:soundplay 1s infinite; }
     .delay-1 { animation-delay:.1s; } .delay-2 { animation-delay:.2s; } .delay-3 { animation-delay:.3s; } .delay-4 { animation-delay:.4s; }
     .bar { background:var(--track); bottom:0; height:4px; left:0; position:absolute; right:0; }
-    .bar-inner { background:var(--accent); height:100%; opacity:0; transition:width .05s linear; }
+    .bar-inner { background:var(--accent); height:100%; transform:scaleX(0); transform-origin:left center; }
     @keyframes soundplay { 0%,100% { height:4px; } 50% { height:12px; } }
     @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; } }
   </style>
 </head>
 <body>
   <main id="app" aria-label="Clock">
-    <audio id="audio" src="beep2.mp3" preload="auto"></audio>
     <div class="app-inner"><div class="clock" aria-live="off" aria-label="Current time">
       <span id="hours" class="time">00</span><span class="time">:</span><span id="minutes" class="time">00</span><span class="time">:</span><span id="seconds" class="time">00</span><span id="milliseconds" class="millisecond">.0</span>
     </div></div>
     <button id="theme-button" class="button-theme" type="button" aria-label="Switch to dark mode"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="sun.svg#Capa_1"></use></svg></button>
-    <button id="sound-button" class="button-muted is-muted" type="button" aria-label="Turn sound on" aria-pressed="false"><span class="icon-sound" aria-hidden="true"><span></span><span class="delay-2"></span><span class="delay-4"></span><span class="delay-1"></span><span class="delay-3"></span></span></button>
+    <button id="sound-button" class="button-sound is-muted" type="button" aria-label="Sound: muted. Click to use a sound every second" aria-pressed="false"><span class="icon-sound" aria-hidden="true"><span></span><span class="delay-2"></span><span class="delay-4"></span><span class="delay-1"></span><span class="delay-3"></span></span></button>
     <div class="bar" aria-hidden="true"><div id="bar-inner" class="bar-inner"></div></div>
   </main>
   <script>
     (() => {
-      const body=document.body,audio=document.getElementById('audio'),themeButton=document.getElementById('theme-button'),soundButton=document.getElementById('sound-button'),themeIcon=themeButton.querySelector('use'),hours=document.getElementById('hours'),minutes=document.getElementById('minutes'),seconds=document.getElementById('seconds'),milliseconds=document.getElementById('milliseconds'),bar=document.getElementById('bar-inner');
-      let darkMode=localStorage.getItem('clock-darkmode')==='true',muted=localStorage.getItem('clock-muted')!=='false',lastCue='';
+      const body=document.body,themeButton=document.getElementById('theme-button'),soundButton=document.getElementById('sound-button'),themeIcon=themeButton.querySelector('use'),hours=document.getElementById('hours'),minutes=document.getElementById('minutes'),seconds=document.getElementById('seconds'),milliseconds=document.getElementById('milliseconds'),bar=document.getElementById('bar-inner');
+      const soundModes=['second','ten','muted'];
+      const soundLabels={second:'every second',ten:'every ten seconds',muted:'muted'};
+      let darkMode=localStorage.getItem('clock-darkmode')==='true',soundMode=localStorage.getItem('clock-sound-mode')||'muted',lastSecond=-1,audioContext;
+      if(!soundModes.includes(soundMode)) soundMode='muted';
       const pad=value=>String(value).padStart(2,'0');
       const updateTheme=()=>{ body.classList.toggle('darkmode',darkMode); themeButton.setAttribute('aria-label',darkMode?'Switch to light mode':'Switch to dark mode'); themeIcon.setAttribute('href',darkMode?'moon.svg#Capa_1':'sun.svg#Capa_1'); document.querySelector('meta[name="theme-color"]').setAttribute('content',darkMode?'#212529':'#f8f9fa'); };
-      const updateSound=()=>{ audio.muted=muted; soundButton.classList.toggle('is-muted',muted); soundButton.classList.toggle('is-play',!muted); soundButton.setAttribute('aria-label',muted?'Turn sound on':'Turn sound off'); soundButton.setAttribute('aria-pressed',String(!muted)); };
-      const playCue=()=>{ if(muted)return; audio.currentTime=0; audio.play().catch(()=>{}); };
-      const render=()=>{ const now=new Date(),ms=now.getMilliseconds(),cue=`${now.getMinutes()}:${now.getSeconds()}`; hours.textContent=pad(now.getHours()); minutes.textContent=pad(now.getMinutes()); seconds.textContent=pad(now.getSeconds()); milliseconds.textContent=`.${Math.floor(ms/100)}`; bar.style.width=`${ms/10}%`; bar.style.opacity=String(ms/1000); if(now.getSeconds()%10===9&&ms>=500&&cue!==lastCue){lastCue=cue;playCue();} window.requestAnimationFrame(render); };
+      const updateSound=()=>{ const muted=soundMode==='muted'; soundButton.classList.toggle('is-muted',muted); soundButton.classList.toggle('is-play',!muted); soundButton.setAttribute('aria-label',`Sound: ${soundLabels[soundMode]}. Click to change`); soundButton.setAttribute('aria-pressed',String(!muted)); };
+      const ensureAudio=()=>{ if(!audioContext) audioContext=new (window.AudioContext||window.webkitAudioContext)(); if(audioContext.state==='suspended') audioContext.resume(); return audioContext; };
+      const playCue=()=>{ if(soundMode==='muted'||!window.AudioContext&&!window.webkitAudioContext)return; const context=ensureAudio(),oscillator=context.createOscillator(),gain=context.createGain(),start=context.currentTime; oscillator.type='sine'; oscillator.frequency.setValueAtTime(880,start); gain.gain.setValueAtTime(0.0001,start); gain.gain.exponentialRampToValueAtTime(0.18,start+0.005); gain.gain.exponentialRampToValueAtTime(0.0001,start+0.08); oscillator.connect(gain).connect(context.destination); oscillator.start(start); oscillator.stop(start+0.09); };
+      const render=()=>{ const clockMs=Date.now(),now=new Date(clockMs),ms=clockMs%1000,second=Math.floor(clockMs/1000); hours.textContent=pad(now.getHours()); minutes.textContent=pad(now.getMinutes()); seconds.textContent=pad(now.getSeconds()); milliseconds.textContent=`.${Math.floor(ms/100)}`; bar.style.transform=`scaleX(${ms/1000})`; if(second!==lastSecond){ if((soundMode==='second')||(soundMode==='ten'&&now.getSeconds()%10===0))playCue(); lastSecond=second; } window.requestAnimationFrame(render); };
       themeButton.addEventListener('click',()=>{ darkMode=!darkMode; localStorage.setItem('clock-darkmode',String(darkMode)); updateTheme(); });
-      soundButton.addEventListener('click',()=>{ muted=!muted; localStorage.setItem('clock-muted',String(muted)); updateSound(); if(!muted)playCue(); });
+      soundButton.addEventListener('click',()=>{ const previous=soundMode; soundMode=soundModes[(soundModes.indexOf(soundMode)+1)%soundModes.length]; localStorage.setItem('clock-sound-mode',soundMode); updateSound(); if(previous==='muted'&&soundMode!=='muted')playCue(); });
       updateTheme(); updateSound(); window.requestAnimationFrame(render);
       if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1')) navigator.serviceWorker.register('sw.js').catch(()=>{});
     })();
